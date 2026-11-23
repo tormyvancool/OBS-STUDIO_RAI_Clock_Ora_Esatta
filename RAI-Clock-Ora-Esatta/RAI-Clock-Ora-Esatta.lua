@@ -462,6 +462,34 @@ function ann_files_for(hour, minute)
 	return files
 end
 
+--- Reads the announcement settings directly from the clock source(s) that exist in OBS.
+--- This does not depend on `create`/`update` having been called in the current Lua state, which
+--- is not the case after the script is reloaded. The first enabled clock source wins.
+function ann_refresh_from_sources()
+	local enabled, hour, minute = false, ann.hour, ann.minute
+	local sources = obs.obs_enum_sources()
+	if sources then
+		for _, src in ipairs(sources) do
+			if obs.obs_source_get_id(src) == source_def.id then
+				local st = obs.obs_source_get_settings(src)
+				if st then
+					if obs.obs_data_get_bool(st, "ann_enabled") then
+						enabled = true
+						hour = obs.obs_data_get_int(st, "ann_hour")
+						minute = obs.obs_data_get_int(st, "ann_minute")
+					end
+					obs.obs_data_release(st)
+				end
+				if enabled then
+					break
+				end
+			end
+		end
+		obs.source_list_release(sources)
+	end
+	ann.enabled, ann.hour, ann.minute = enabled, hour, minute
+end
+
 --- Timer callback: drives the countdown beeps and the chained voice files.
 function announcement_tick()
 	-- 1) Chain the voice files: start the next one as soon as the current one has ended.
@@ -493,6 +521,7 @@ function announcement_tick()
 		return
 	end
 	ann.last_t = now_t
+	ann_refresh_from_sources()
 
 	-- d = seconds remaining until the announcement time (negative once it has passed)
 	local d
