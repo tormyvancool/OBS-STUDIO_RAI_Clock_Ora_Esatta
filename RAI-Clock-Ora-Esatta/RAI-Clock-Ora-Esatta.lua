@@ -7,7 +7,7 @@
          https://creativecommons.org
          You are free to share and use this script for any purpose, provided you give
          appropriate credit. You may not distribute modified versions of this script.
-@version 1.2.0
+@version 1.0.2
 
 @details
 Registers a custom 1920x1440 OBS source ("Lua RAI Clock") that composites four PNG layers
@@ -17,7 +17,7 @@ obtained by combining the system clock with OBS's high-resolution timer, see `sm
 
 Optional vocal announcement (configured in the source's properties: double-click the source):
 - Two drop-downs select the hour (00-23) and the minute (00-59) of the announcement.
-- 7 seconds before that time, `Beep.wav` is played once. It is a single pre-mixed 7-second file
+- 6 seconds before that time, `Beep.wav` is played once. It is a single pre-mixed 6-second file
   that already contains the whole beep pattern and ends exactly at the announcement time.
 - At the selected time, `hXX.wav` is played (e.g. `h13.wav`). If the minute is not 0,
   `mXX.wav` (e.g. `m12.wav`) is played immediately after it.
@@ -26,10 +26,13 @@ Optional vocal announcement (configured in the source's properties: double-click
 @requires
 - OBS Studio with LuaJIT scripting support (`obslua`, `bit`)
 - Subfolder `RAI-Clock-Ora-Esatta/` in the same directory as this script containing:
+  * `RAI-Clock-Ora-Esatta.lua` (this script)
+  * `Images/` subfolder with the four PNG layers:
   * `RAI-Clock-Dial.png`
   * `RAI-Clock-Hours.png`
   * `RAI-Clock-Minutes.png`
   * `RAI-Clock-Seconds.png`
+  * `Audio/` subfolder with the audio files:
   * `Beep.wav`
   * `h00.wav` ... `h23.wav`
   * `m01.wav` ... `m59.wav`
