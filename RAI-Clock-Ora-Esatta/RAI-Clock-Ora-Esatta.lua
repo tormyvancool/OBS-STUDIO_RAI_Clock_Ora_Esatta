@@ -272,7 +272,7 @@ AUDIO_SUBDIR = "Audio/"
 BEEP_FILE = "Beep.wav"
 --- Seconds before the announcement at which Beep.wav is started. Beep.wav is one pre-mixed
 --- file (made in a DAW) that contains the whole beep pattern and ends at the announcement time.
-BEEP_LEAD = 7
+BEEP_LEAD = 6
 --- OBS global audio channels used for the two private players (0 is video, 1-5 are used by OBS).
 AUDIO_CHANNEL_BEEP = 10
 AUDIO_CHANNEL_VOICE = 11
