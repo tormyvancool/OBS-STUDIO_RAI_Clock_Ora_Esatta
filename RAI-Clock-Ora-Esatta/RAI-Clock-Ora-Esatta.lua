@@ -305,6 +305,8 @@ ann = {
 	queue = {},         -- voice files still to play
 	voice_busy = false,
 	voice_ticks = 0,
+	voice_dur = nil,       -- length in seconds of the voice file being played (nil = unknown)
+	voice_start_ns = nil,  -- OBS high-resolution time at which it started
 }
 
 --- Returns the absolute path of the audio folder.
@@ -323,6 +325,59 @@ function file_exists(path)
 		return true
 	end
 	return false
+end
+
+--- Reads a little-endian unsigned 32-bit integer from a string.
+--- @param s string
+--- @param i number 1-based position of the first byte.
+--- @return number
+function u32le(s, i)
+	local a, b, c, d = s:byte(i, i + 3)
+	return a + b * 256 + c * 65536 + d * 16777216
+end
+
+--- Returns the duration in seconds of a PCM WAV file by reading its header, or nil.
+--- @param path string
+--- @return number|nil
+function wav_duration(path)
+	local f = io.open(path, "rb")
+	if not f then
+		return nil
+	end
+	local head = f:read(12)
+	if not head or #head < 12 or head:sub(1, 4) ~= "RIFF" or head:sub(9, 12) ~= "WAVE" then
+		f:close()
+		return nil
+	end
+	local size = f:seek("end")
+	local byte_rate, data_size
+	local pos = 12
+	while pos + 8 <= size do
+		f:seek("set", pos)
+		local hdr = f:read(8)
+		if not hdr or #hdr < 8 then
+			break
+		end
+		local id, len = hdr:sub(1, 4), u32le(hdr, 5)
+		if id == "fmt " then
+			local fmt = f:read(16)
+			if fmt and #fmt >= 16 then
+				byte_rate = u32le(fmt, 9)
+			end
+		elseif id == "data" then
+			if len == 0 or pos + 8 + len > size then
+				len = size - pos - 8
+			end
+			data_size = len
+			break
+		end
+		pos = pos + 8 + len + (len % 2)
+	end
+	f:close()
+	if byte_rate and byte_rate > 0 and data_size then
+		return data_size / byte_rate
+	end
+	return nil
 end
 
 --- Creates a private media player routed to a global audio channel.
@@ -380,9 +435,13 @@ function ann_next_voice()
 		local name = table.remove(ann.queue, 1)
 		local path = ann_dir() .. name
 		if file_exists(path) then
+			ann.voice_dur = wav_duration(path)
+			ann.voice_start_ns = obs.os_gettime_ns and obs.os_gettime_ns() or nil
 			ann_play(ann.voice_src, path)
 			ann.voice_ticks = 0
 			ann.voice_busy = true
+			print(string.format("RAI Clock: playing %s (%s)", name,
+				ann.voice_dur and string.format("%.2f s", ann.voice_dur) or "length unknown"))
 			return
 		else
 			print("RAI Clock: missing audio file " .. path)
@@ -409,7 +468,14 @@ function announcement_tick()
 	if ann.voice_busy and ann.voice_src then
 		ann.voice_ticks = ann.voice_ticks + 1
 		local finished = ann.voice_ticks > VOICE_TIMEOUT_TICKS
-		if not finished and ann.voice_ticks > VOICE_GUARD_TICKS then
+		if not finished and ann.voice_dur then
+			-- Length known from the WAV header: do not depend on OBS reporting the end of playback.
+			local elapsed = ann.voice_ticks * TICK_MS / 1000
+			if ann.voice_start_ns and obs.os_gettime_ns then
+				elapsed = (obs.os_gettime_ns() - ann.voice_start_ns) / 1e9
+			end
+			finished = elapsed >= ann.voice_dur
+		elseif not finished and ann.voice_ticks > VOICE_GUARD_TICKS then
 			local state = obs.obs_source_media_get_state(ann.voice_src)
 			finished = (state == obs.OBS_MEDIA_STATE_ENDED)
 				or (state == obs.OBS_MEDIA_STATE_STOPPED)
@@ -468,6 +534,7 @@ end
 --- Creates the audio players and starts the announcement timer.
 --- @param settings userdata
 function script_load(settings)
+	print("RAI Clock v1.3.2 loaded (audio folder: " .. ann_dir() .. ")")
 	ann.beep_src = ann_create_player("RAI Clock Beep", AUDIO_CHANNEL_BEEP, nil)
 	ann.voice_src = ann_create_player("RAI Clock Voice", AUDIO_CHANNEL_VOICE, nil)
 	obs.timer_add(announcement_tick, TICK_MS)
