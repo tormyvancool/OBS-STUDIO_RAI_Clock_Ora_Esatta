@@ -90,3 +90,5 @@ The announcement is sent to audio tracks 1–6, so it is heard on your stream an
 - **License:** Creative Commons Attribution-NoDerivatives 4.0 International (**CC BY-ND 4.0**)
 
 You are free to use and share this script and its artwork for any purpose with proper credit to **Tormy Van Cool**, provided you do not distribute modified versions. See `LICENSE.txt` for full details.
+
+[![Watch the demo video](https://img.youtube.com/vi/Pk2-QNNwvgM/0.jpg)](https://www.youtube.com/watch?v=Pk2-QNNwvgM)
