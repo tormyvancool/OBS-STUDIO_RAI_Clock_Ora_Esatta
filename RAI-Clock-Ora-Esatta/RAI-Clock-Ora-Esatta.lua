@@ -273,6 +273,8 @@ end
 AUDIO_SUBDIR = "Audio/"
 --- Countdown file, played once.
 BEEP_FILE = "Beep.wav"
+--- Seconds to wait after the end of the beep before the voice starts (0 = immediately).
+VOICE_DELAY = 1
 --- Seconds before the announcement at which Beep.wav is started. Beep.wav is one pre-mixed
 --- file (made in a DAW) that contains the whole beep pattern and ends at the announcement time.
 BEEP_LEAD = 6
@@ -426,20 +428,20 @@ function announcement_tick()
 	end
 	ann.last_t = now_t
 
-	-- d = seconds remaining until the announcement time
+	-- d = seconds remaining until the announcement time (negative once it has passed)
 	local d
 	if ann.test_target then
 		d = ann.test_target - now_t
-		if d <= 0 then
+		if d <= -VOICE_DELAY then
 			ann.test_target = nil
 		end
-		if d < 0 then
+		if d < -VOICE_DELAY then
 			return
 		end
 	elseif ann.enabled then
 		local t = os.date("*t", now_t)
 		local sod = t.hour * 3600 + t.min * 60 + t.sec
-		d = (ann.hour * 3600 + ann.minute * 60 - sod) % 86400
+		d = ((ann.hour * 3600 + ann.minute * 60 - sod + 43200) % 86400) - 43200
 	else
 		return
 	end
@@ -451,7 +453,7 @@ function announcement_tick()
 		else
 			print("RAI Clock: missing audio file " .. path)
 		end
-	elseif d == 0 and ann.voice_src then
+	elseif d == -VOICE_DELAY and ann.voice_src then
 		ann.queue = ann_files_for(ann.hour, ann.minute)
 		ann_next_voice()
 	end
@@ -491,7 +493,7 @@ end
 function script_description()
 	return "Adds \"RAI Clock Ora Esatta\" which draws the animated RAI analog clock of the end of the 70s.\n" ..
 		"Optional vocal announcement: add the source to a scene, double-click it and pick hour and minute. " ..
-		"Seven seconds before, Beep.wav is played once, then hXX.wav and, if the minute is not 0, mXX.wav."
+		"Shortly before the chosen time Beep.wav is played once, then hXX.wav and, if the minute is not 0, mXX.wav."
 end
 
 obs.obs_register_source(source_def)
