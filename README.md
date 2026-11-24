@@ -108,3 +108,6 @@ You are free to use and share this script and its artwork for any purpose with p
 ## Video
 
 [![Watch the demo video](https://img.youtube.com/vi/Pk2-QNNwvgM/0.jpg)](https://www.youtube.com/watch?v=Pk2-QNNwvgM)
+
+How it is once installed and recorded or streamed with OBS
+[![Watch the demo video](https://img.youtube.com/vi/-UtbRHy-nDg/0.jpg)](https://www.youtube.com/watch?v=-UtbRHy-nDg)
