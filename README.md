@@ -54,14 +54,14 @@ Double-click the clock source in your scene to open its properties:
 
 ### How it plays
 
-1. **7 seconds before** the chosen time, `Beep.wav` is played once. It is a single pre-mixed 7-second file that already contains the whole beep pattern and ends exactly at the announcement time.
+1. **6 seconds before** the chosen time, `Beep.wav` is played once. It is a single pre-mixed 7-second file that already contains the whole beep pattern and ends exactly at the announcement time.
 2. **At the chosen time**, `hXX.wav` is played, where `XX` is the hour in 24-hour format (13:00 plays `h13.wav`).
 3. If the minute is not `00`, `mXX.wav` follows immediately (13:12 plays `h13.wav`, then `m12.wav`).
 4. The announcement **repeats every day** at the same time.
 
 ### Audio files
 
-- `Beep.wav`: exactly 7 seconds long, with the beep pattern prepared in your audio editor (for example, beeps at 0, 1, 2, 3, 4 and 6 seconds and silence at 5 seconds, so the last beep lands one second before the announcement).
+- `Beep.wav`: exactly 6 seconds long, with the beep pattern prepared in your audio editor (for example, beeps at 0, 1, 2, 3, 4 and 6 seconds and silence at 5 seconds, so the last beep lands one second before the announcement).
 - `h00.wav` … `h23.wav`: the spoken hours.
 - `m01.wav` … `m59.wav`: the spoken minutes.
 
@@ -97,6 +97,10 @@ The hour and minute announcements are **not** the original announcer's voice. I 
 ### The graphics
 
 All the graphics, the dial and the hands, were redrawn in **Affinity** in Vector mode, the same way I made them for my reconstruction videos on my second channel, [@RicordiDellaRAI](https://www.youtube.com/@RicordiDellaRAI).
+
+### The help of AI: where it came into the game
+
+AI was used to help me to quickly solve some issue with the audio-announcment that wasn't starting at the moment I wanted, and to make the seconds-hand movement to be smoother.
 
 ## Author & License
 
