@@ -92,11 +92,15 @@ Made in **Reaper**: a tone generator set to 1 kHz, with volume automation to cre
 
 ### The voice
 
-The hour and minute announcements are **not** the original announcer's voice. I chose not to use AI to clone a voice: the original announcer is probably no longer with us, and cloning it would not feel morally right to me. There could also be legal issues I prefer to avoid. I used a free text-to-speech (TTS) service instead, although I couldn't find a voice similar to the original.
+The hour and minute announcements are **not** the original announcer's voice. I chose not to use AI to clone a voice: the original announcer is probably no longer with us, and cloning it would not feel morally right to me. There could also be legal issues I prefer to avoid. I used a free text-to-speech (TTS) service instead, although I couldn't find a voice similar to the original. I used Elevenlabs service.
 
 ### The graphics
 
 All the graphics, the dial and the hands, were redrawn in **Affinity** in Vector mode, the same way I made them for my reconstruction videos on my second channel, [@RicordiDellaRAI](https://www.youtube.com/@RicordiDellaRAI).
+
+### The code:
+
+It was written within VSC
 
 ### The help of AI: where it came into the game
 
